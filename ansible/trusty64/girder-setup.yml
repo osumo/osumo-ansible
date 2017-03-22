@@ -1,0 +1,67 @@
+- name: Install girder_client
+  become: yes
+  command: "{{ storage }}/venv/bin/pip install -e ."
+  args:
+    chdir: "{{ storage }}/girder/clients/python"
+
+- name: Create Girder admin user
+  girder:
+    port: 8080
+    scheme: http
+    user:
+      firstName: "{{ adminuser_firstname }}"
+      lastName: "{{ adminuser_lastname }}"
+      login: "{{ adminuser_login }}"
+      password: "{{ adminuser_password }}"
+      email: "{{ adminuser_email }}"
+      admin: yes
+    state: present
+
+- name: Activate Girder plugins
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    plugins:
+      - osumo
+    state: present
+
+- name: Reroute Girder client and OSUMO plugins
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: "system/setting"
+      parameters:
+        key: core.route_table
+        value: '{"core_girder":"/girder","core_static_root":"/static","osumo":"/"}'
+
+- name: Restart Girder
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: system/restart
+
+- name: Wait for Girder to restart
+  wait_for:
+    port: 8080
+    delay: 5
+
+- name: Create filesystem assetstore
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    assetstore:
+      name: Filesystem Assetstore
+      type: filesystem
+      root: "{{ storage }}/assetstore/girder"
+      current: true
+    state: present

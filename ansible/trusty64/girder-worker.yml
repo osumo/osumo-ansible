@@ -1,0 +1,15 @@
+- name: Clone Girder Worker repository
+  git:
+    repo: https://github.com/girder/girder_worker
+    dest: "{{ storage }}/girder_worker"
+    version: "{{ girder_worker_revision }}"
+
+- name: Install Python dependencies for Girder Worker
+  command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
+  args:
+    chdir: "{{ storage }}/girder_worker"
+
+- name: Install Girder Worker in editable mode
+  command: "{{ storage }}/venv/bin/pip install -e ."
+  args:
+    chdir: "{{ storage }}/girder_worker"

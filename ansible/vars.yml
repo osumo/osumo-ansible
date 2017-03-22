@@ -1,0 +1,12 @@
+storage: /home/vagrant
+girder_venv: "{{ storage }}/venv"
+
+adminuser_firstname: Admini
+adminuser_lastname: Strator
+adminuser_login: admin
+adminuser_password: adminadmin
+adminuser_email: admin@example.com
+
+girder_revision: master
+girder_worker_revision: master
+osumo_revision: master
