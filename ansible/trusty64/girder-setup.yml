@@ -65,3 +65,61 @@
       root: "{{ storage }}/assetstore/girder"
       current: true
     state: present
+
+- name: Create a public data collection
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    collection:
+      name: Sample OSUMO Data
+      public: true
+    state: present
+  register: sample_data
+
+- name: Download sample data from DKC
+  unarchive:
+    src: https://data.kitware.com/api/v1/item/58d4087d8d777f0aef5d890c/download
+    dest: "{{ storage }}"
+    remote_src: True
+
+- name: Upload sample data to Girder
+  command: "{{ storage }}/venv/bin/girder-cli --scheme http --port 8080 --username {{ adminuser_login }} --password {{ adminuser_password }} upload --reuse {{ sample_data['gc_return']['_id'] }} {{ storage }}/osumo-sample-data"
+
+- name: Get id for sample data folder
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    get:
+      path: folder
+      parameters:
+        parentType: collection
+        parentId: "{{ sample_data['gc_return']['_id'] }}"
+  register: sample_data_folder
+
+- name: Get id for Large.csv
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    get:
+      path: item
+      parameters:
+        folderId: "{{ sample_data_folder['gc_return'][0]['_id'] }}"
+        name: Large.csv
+  register: large
+
+- name: Get metadata flags on Large.csv
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: "item/{{ large['gc_return'][0]['_id'] }}/metadata"
+      parameters:
+        metadata: '{"sumoDataType":"mrna"}'
