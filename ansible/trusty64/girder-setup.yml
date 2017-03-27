@@ -85,7 +85,7 @@
     remote_src: True
 
 - name: Upload sample data to Girder
-  command: "{{ storage }}/venv/bin/girder-cli --scheme http --port 8080 --username {{ adminuser_login }} --password {{ adminuser_password }} upload --reuse {{ sample_data['gc_return']['_id'] }} {{ storage }}/osumo-sample-data"
+  command: "{{ storage }}/venv/bin/girder-cli --scheme http --port 8080 --username {{ adminuser_login }} --password {{ adminuser_password }} upload --reuse --parent-type collection {{ sample_data['gc_return']['_id'] }} {{ storage }}/osumo-sample-data"
 
 - name: Get id for sample data folder
   girder:
