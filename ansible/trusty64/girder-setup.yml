@@ -104,5 +104,27 @@
   with_items:
     - name: Large.csv
       tag: mrna
+    - name: Medium.csv
+      tag: mrna
+    - name: MediumLarge.csv
+      tag: mrna
+    - name: MediumSmall.csv
+      tag: mrna
+    - name: Small.csv
+      tag: mrna
+    - name: Tiny.csv
+      tag: mrna
+    - name: miRNA.sample.csv
+      tag: mirna
+    - name: miRNAnorm_pre.csv
+      tag: mirna
+    - name: mRNA.sample.csv
+      tag: mrna
+    - name: mRNAnorm_pam50.csv
+      tag: mrna
+    - name: time.cencer.csv
+      tag: cprofile
+    - name: time.sur.csv
+      tag: cprofile
   loop_control:
     loop_var: item
