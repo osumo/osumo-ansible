@@ -1,4 +1,4 @@
-- name: Get id for Large.csv
+- name: "Get id for {{ item.name }}"
   girder:
     port: 8080
     scheme: http
@@ -8,16 +8,19 @@
       path: item
       parameters:
         folderId: "{{ sample_data_folder['gc_return'][0]['_id'] }}"
-        name: Large.csv
-  register: large
+        name: "{{ item.name }}"
+  register: item_id
 
-- name: Get metadata flags on Large.csv
+- name: "Set metadata flags on {{ item.name }}"
   girder:
     port: 8080
     scheme: http
     username: "{{ adminuser_login }}"
     password: "{{ adminuser_password }}"
     put:
-      path: "item/{{ large['gc_return'][0]['_id'] }}/metadata"
+      path: "item/{{ item_id['gc_return'][0]['_id'] }}/metadata"
       parameters:
-        metadata: '{"sumoDataType":"mrna"}'
+        # The leading space in the following is *intentional* - without it, the
+        # JSON string will be parsed into a JSON object before it's sent to
+        # Girder, which causes the operation to fail.
+        metadata: ' {"sumoDataType":"{{ item.tag }}"}'

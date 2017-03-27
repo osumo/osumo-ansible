@@ -101,3 +101,8 @@
   register: sample_data_folder
 
 - include: set-metadata.yml
+  with_items:
+    - name: Large.csv
+      tag: mrna
+  loop_control:
+    loop_var: item
