@@ -25,7 +25,7 @@
           - lib32z-dev
           - libffi-dev
           - libjpeg-dev
-          #- libssl-dev
+          - libssl-dev
           - libxml2-dev
           - libxslt1-dev
           - libz-dev
