@@ -11,7 +11,7 @@
         name: "{{ item.name }}"
   register: item_id
 
-- name: "Set metadata flags on {{ item.name }}"
+- name: "Set sumoDataType metadata on {{ item.name }} to {{ item.tag }}"
   girder:
     port: 8080
     scheme: http

@@ -120,17 +120,17 @@
 - include: set-metadata.yml
   with_items:
     - name: Large.csv
-      tag: mrna
+      tag: rawSequence
     - name: Medium.csv
-      tag: mrna
+      tag: rawSequence
     - name: MediumLarge.csv
-      tag: mrna
+      tag: rawSequence
     - name: MediumSmall.csv
-      tag: mrna
+      tag: rawSequence
     - name: Small.csv
-      tag: mrna
+      tag: rawSequence
     - name: Tiny.csv
-      tag: mrna
+      tag: rawSequence
     - name: miRNA.sample.csv
       tag: mirna
     - name: miRNAnorm_pre.csv
