@@ -42,6 +42,9 @@
         key: core.route_table
         value: '{"core_girder":"/girder","core_static_root":"/static","osumo":"/"}'
 
+- name: Rebuild Girder web code
+  command: "{{ storage }}/venv/bin/girder-install web --plugins jobs,osumo,worker"
+
 - name: Restart Girder
   girder:
     port: 8080
@@ -55,6 +58,17 @@
   wait_for:
     port: 8080
     delay: 5
+
+- name: Set worker plugin options
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: "system/setting"
+      parameters:
+        list: '[{"key":"worker.broker","value":"mongodb://localhost/broker"},{"key":"worker.backend","value":"mongodb://localhost/backend"}]'
 
 - name: Create filesystem assetstore
   girder:

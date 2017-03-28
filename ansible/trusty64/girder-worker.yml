@@ -4,12 +4,76 @@
     dest: "{{ storage }}/girder_worker"
     version: "{{ girder_worker_revision }}"
 
+- name: Fetch CRAN repository key
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: E084DAB9
+    state: present
+
+- name: Add CRAN repository
+  become: yes
+  apt_repository:
+    repo: deb https://cloud.r-project.org/bin/linux/ubuntu trusty/
+    state: present
+
+- name: Install R packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items:
+    - libcurl4-gnutls-dev
+    - r-base
+
+- name: R packages | install
+  become: yes
+  command: >-
+    Rscript --slave --no-save --no-restore-history -e
+    "if(!('{{ item }}' %in% installed.packages())) { install.packages('{{ item }}', repos='http://cran.rstudio.com') }"
+  with_items:
+    - shiny
+    - jsonlite
+    - pheatmap
+    - survival
+    - igraph
+    - cccd
+
 - name: Install Python dependencies for Girder Worker
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
     chdir: "{{ storage }}/girder_worker"
 
+- name: Install Python dependencies for girder_io plugin
+  command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
+  args:
+    chdir: "{{ storage }}/girder_worker/girder_worker/plugins/girder_io"
+
+- name: Install Python dependencies for r plugin
+  command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
+  args:
+    chdir: "{{ storage }}/girder_worker/girder_worker/plugins/r"
+
+- name: Copy local config file for Girder Worker
+  copy:
+    src: ../../worker.local.cfg
+    dest: "{{ storage }}/girder_worker/girder_worker"
+
 - name: Install Girder Worker in editable mode
   command: "{{ storage }}/venv/bin/pip install -e ."
   args:
     chdir: "{{ storage }}/girder_worker"
+
+- name: Copy Girder Worker launch script
+  copy:
+    src: ../../launch-girder-worker.sh
+    dest: "{{ storage }}"
+    mode: "u=rwx"
+
+- name: Start Girder Worker in background
+  shell: "(./launch-girder-worker.sh >girder-worker.log 2>&1 &)"
+  async: 10
+  poll: 0
+  args:
+    chdir: "{{ storage }}"
