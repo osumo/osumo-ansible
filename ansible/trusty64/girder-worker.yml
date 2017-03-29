@@ -57,7 +57,7 @@
 
 - name: Copy local config file for Girder Worker
   copy:
-    src: ../../worker.local.cfg
+    src: ../../asset/worker.local.cfg
     dest: "{{ storage }}/girder_worker/girder_worker"
 
 - name: Install Girder Worker in editable mode
@@ -67,7 +67,7 @@
 
 - name: Copy Girder Worker launch script
   copy:
-    src: ../../launch-girder-worker.sh
+    src: ../../asset/launch-girder-worker.sh
     dest: "{{ storage }}"
     mode: "u=rwx"
 
