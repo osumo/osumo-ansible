@@ -1,5 +1,4 @@
 *.swp
 .vagrant
-requirements.yml
 roles
 site.retry
