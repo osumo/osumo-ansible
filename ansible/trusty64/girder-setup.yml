@@ -1,0 +1,147 @@
+# This installs girder_client into the system Python, because the Girder role
+# tasks use that Python to execute. This is probably a bug in how Ansible in
+# general works, so we just have to play by those rules for now.
+- name: Install girder_client
+  become: yes
+  command: "pip install -e ."
+  args:
+    chdir: "{{ storage }}/girder/clients/python"
+
+- name: Create Girder admin user
+  girder:
+    port: 8080
+    scheme: http
+    user:
+      firstName: "{{ adminuser_firstname }}"
+      lastName: "{{ adminuser_lastname }}"
+      login: "{{ adminuser_login }}"
+      password: "{{ adminuser_password }}"
+      email: "{{ adminuser_email }}"
+      admin: yes
+    state: present
+
+- name: Activate Girder plugins
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    plugins:
+      - osumo
+    state: present
+
+- name: Reroute Girder client and OSUMO plugins
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: "system/setting"
+      parameters:
+        key: core.route_table
+        value: '{"core_girder":"/girder","core_static_root":"/static","osumo":"/"}'
+
+- name: Rebuild Girder web code
+  command: "{{ storage }}/venv/bin/girder-install web --plugins jobs,osumo,worker"
+
+- name: Restart Girder
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: system/restart
+
+- name: Wait for Girder to restart
+  wait_for:
+    port: 8080
+    delay: 5
+
+- name: Set worker plugin options
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    put:
+      path: "system/setting"
+      parameters:
+        list: '[{"key":"worker.broker","value":"mongodb://localhost/broker"},{"key":"worker.backend","value":"mongodb://localhost/backend"}]'
+
+- name: Create filesystem assetstore
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    assetstore:
+      name: Filesystem Assetstore
+      type: filesystem
+      root: "{{ storage }}/assetstore/girder"
+      current: true
+    state: present
+
+- name: Create a public data collection
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    collection:
+      name: Sample OSUMO Data
+      public: true
+    state: present
+  register: sample_data
+
+- name: Download sample data from DKC
+  unarchive:
+    src: https://data.kitware.com/api/v1/item/58dad25a8d777f0aef5d897a/download
+    dest: "{{ storage }}"
+    remote_src: True
+
+- name: Upload sample data to Girder
+  command: "girder-cli --scheme http --port 8080 --username {{ adminuser_login }} --password {{ adminuser_password }} upload --reuse --parent-type collection {{ sample_data['gc_return']['_id'] }} {{ storage }}/osumo-sample-data"
+
+- name: Get id for sample data folder
+  girder:
+    port: 8080
+    scheme: http
+    username: "{{ adminuser_login }}"
+    password: "{{ adminuser_password }}"
+    get:
+      path: folder
+      parameters:
+        parentType: collection
+        parentId: "{{ sample_data['gc_return']['_id'] }}"
+  register: sample_data_folder
+
+- include: set-metadata.yml
+  with_items:
+    - name: Large.csv
+      tag: rawSequence
+    - name: Medium.csv
+      tag: rawSequence
+    - name: MediumLarge.csv
+      tag: rawSequence
+    - name: MediumSmall.csv
+      tag: rawSequence
+    - name: Small.csv
+      tag: rawSequence
+    - name: Tiny.csv
+      tag: rawSequence
+    - name: miRNA.sample.csv
+      tag: mirna
+    - name: miRNAnorm_pre.csv
+      tag: mirna
+    - name: mRNA.sample.csv
+      tag: mrna
+    - name: mRNAnorm_pam50.csv
+      tag: mrna
+    - name: time.cancer.csv
+      tag: cprofile
+    - name: time.sur.csv
+      tag: cprofile
+  loop_control:
+    loop_var: item
