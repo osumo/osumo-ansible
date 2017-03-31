@@ -12,7 +12,8 @@
     - role: girder.girder
       girder_path: "{{ storage }}/girder"
       girder_virtualenv: "{{ girder_venv }}"
-      girder_version: "{{ girder_revision }}"
+      girder_update: no
+      girder_force: no
 
   post_tasks:
     - name: Install APT packages

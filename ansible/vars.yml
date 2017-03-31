@@ -8,7 +8,3 @@ adminuser_lastname: Strator
 adminuser_login: admin
 adminuser_password: adminadmin
 adminuser_email: admin@example.com
-
-# Git revisions for component software.
-girder_revision: b2c44b662dd41745dc9332fb4ee46b24f4e02814
-osumo_revision: 1f8eefa844194d9324c0ae58250554a64c67f1bb

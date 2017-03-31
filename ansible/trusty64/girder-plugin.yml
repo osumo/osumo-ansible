@@ -1,9 +1,3 @@
-- name: Clone OSUMO repository
-  git:
-    repo: https://github.com/osumo/osumo
-    dest: "{{ storage }}/girder/plugins/osumo"
-    version: "{{ osumo_revision }}"
-
 - name: Install OSUMO plugin into Girder
   command: "{{ storage }}/venv/bin/girder-install web --plugins osumo --plugin-prefix index"
   args:

@@ -1,3 +1,9 @@
 [submodule "girder_worker"]
 	path = girder_worker
 	url = git@github.com:girder/girder_worker
+[submodule "osumo"]
+	path = osumo
+	url = git@github.com:osumo/osumo
+[submodule "girder"]
+	path = girder
+	url = git@github.com:girder/girder
