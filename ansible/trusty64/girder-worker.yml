@@ -1,9 +1,3 @@
-- name: Clone Girder Worker repository
-  git:
-    repo: https://github.com/girder/girder_worker
-    dest: "{{ storage }}/girder_worker"
-    version: "{{ girder_worker_revision }}"
-
 - name: Fetch CRAN repository key
   become: yes
   apt_key:

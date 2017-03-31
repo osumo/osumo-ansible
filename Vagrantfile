@@ -14,6 +14,9 @@ Vagrant.configure("2") do |config|
   host_port = ENV["OSUMO_HOST_PORT"] || 8080
   config.vm.network "forwarded_port", guest: 8080, host: host_port
 
+  # Set up shared folders.
+  config.vm.synced_folder "girder_worker", "/home/vagrant/girder_worker"
+
   # Name the VM.
   config.vm.define "osumo" do |node| end
 

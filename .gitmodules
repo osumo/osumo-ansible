@@ -1,0 +1,3 @@
+[submodule "girder_worker"]
+	path = girder_worker
+	url = git@github.com:girder/girder_worker
