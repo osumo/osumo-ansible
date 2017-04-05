@@ -1,0 +1,7 @@
+- name: Add Node repository key
+  become: yes
+  shell: apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 68576280
+
+- name: Add Node repository
+  become: yes
+  shell: apt-add-repository 'deb https://deb.nodesource.com/node_7.x trusty main'
