@@ -1,4 +1,4 @@
 - name: Install OSUMO plugin into Girder
   command: "{{ storage }}/venv/bin/girder-install web --plugins osumo --plugin-prefix index"
   args:
-    creates: "{{ storage }}/girder/clients/web/static/built/plugins/osumo"
+    creates: "{{ worktree }}/girder/clients/web/static/built/plugins/osumo"

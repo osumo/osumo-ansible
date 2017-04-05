@@ -37,27 +37,27 @@
 - name: Install Python dependencies for Girder Worker
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
-    chdir: "{{ storage }}/girder_worker"
+    chdir: "{{ worktree }}/girder_worker"
 
 - name: Install Python dependencies for girder_io plugin
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
-    chdir: "{{ storage }}/girder_worker/girder_worker/plugins/girder_io"
+    chdir: "{{ worktree }}/girder_worker/girder_worker/plugins/girder_io"
 
 - name: Install Python dependencies for r plugin
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
-    chdir: "{{ storage }}/girder_worker/girder_worker/plugins/r"
+    chdir: "{{ worktree }}/girder_worker/girder_worker/plugins/r"
 
 - name: Copy local config file for Girder Worker
   copy:
     src: ../../asset/worker.local.cfg
-    dest: "{{ storage }}/girder_worker/girder_worker"
+    dest: "{{ worktree }}/girder_worker/girder_worker"
 
 - name: Install Girder Worker in editable mode
   command: "{{ storage }}/venv/bin/pip install -e ."
   args:
-    chdir: "{{ storage }}/girder_worker"
+    chdir: "{{ worktree }}/girder_worker"
 
 - name: Copy Girder Worker launch script
   copy:

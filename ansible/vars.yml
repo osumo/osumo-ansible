@@ -1,5 +1,6 @@
 # File and repository locations on the guest.
 storage: /home/vagrant
+worktree: "{{ storage }}/osumo-ansible"
 girder_venv: "{{ storage }}/venv"
 
 # Admin user data for Girder instance.

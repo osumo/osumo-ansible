@@ -5,7 +5,7 @@
   become: yes
   command: "pip install -e ."
   args:
-    chdir: "{{ storage }}/girder/clients/python"
+    chdir: "{{ worktree }}/girder/clients/python"
 
 - name: Create Girder admin user
   girder:
