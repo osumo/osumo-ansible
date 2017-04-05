@@ -30,9 +30,12 @@ Vagrant.configure("2") do |config|
 
     ansible.playbook = "ansible/#{box}/site.yml"
 
-    Extra_vars = ENV["ANSIBLE_EXTRA_VARS"]
-    if !Extra_vars.nil? && !Extra_vars.empty?
-      ansible.extra_vars = Hash[Extra_vars.split(/\s+/).map{|w| w.wplit("=")}]
-    end
+    osumo_anon_user = ENV["OSUMO_ANON_USER"] || ""
+    osumo_anon_password = ENV["OSUMO_ANON_PASSWORD"] || ""
+
+    ansible.extra_vars = {
+      "osumo_anon_user" => osumo_anon_user,
+      "osumo_anon_password" => osumo_anon_password
+    }
   end
 end

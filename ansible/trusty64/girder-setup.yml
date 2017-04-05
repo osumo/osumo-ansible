@@ -45,6 +45,11 @@
 - name: Rebuild Girder web code
   command: "{{ storage }}/venv/bin/girder-install web --plugins jobs,osumo,worker"
 
+- name: Emit public user's login and password to disk
+  shell: "echo {{ osumo_anon_user }} {{ osumo_anon_password }} >{{ worktree }}/osumo/osumo_loginpass.txt"
+  args:
+    chdir: "{{ storage }}"
+
 - name: Restart Girder
   girder:
     port: 8080
@@ -58,6 +63,11 @@
   wait_for:
     port: 8080
     delay: 5
+
+- name: Destroy login/password file
+  file:
+    path: "{{ worktree }}/osumo/osumo_loginpass.txt"
+    state: absent
 
 - name: Set worker plugin options
   girder:

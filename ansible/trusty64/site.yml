@@ -6,6 +6,11 @@
     - ../vars.yml
 
   pre_tasks:
+    - name: Verify required environment variables
+      fail:
+        msg: "Environment variables OSUMO_ANON_USER and OSUMO_ANON_PASSWORD are required"
+      when: osumo_anon_user == "" or osumo_anon_password == ""
+
     - include: mongo.yml
     - include: node7.yml
     - name: Update APT keyring
