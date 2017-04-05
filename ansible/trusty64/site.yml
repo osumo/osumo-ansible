@@ -8,15 +8,13 @@
   pre_tasks:
     - include: mongo.yml
     - include: node7.yml
-
-  roles:
-    - role: girder.girder
-      girder_path: "{{ storage }}/girder"
-      girder_virtualenv: "{{ girder_venv }}"
-      girder_update: no
-      girder_force: no
-
-  post_tasks:
+    - name: Update APT keyring
+      become: yes
+      shell: apt-key update
+    - name: Update APT packages
+      become: yes
+      apt:
+        update_cache: yes
     - name: Install APT packages
       become: yes
       apt:
@@ -39,6 +37,15 @@
           - wget
           - zlib1g-dev
 
+  roles:
+    - role: girder
+      girder_path: "{{ worktree }}/girder"
+      girder_virtualenv: "{{ girder_venv }}"
+      girder_clone: no
+      girder_update: no
+      girder_force: no
+
+  post_tasks:
     - include: girder-worker.yml
     - include: girder-plugin.yml
     - include: girder-setup.yml
