@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
   # Set up shared folders.
   config.vm.synced_folder ".", "/home/vagrant/osumo-ansible"
-  config.vm.synced_folder "osumo", "/home/vagrant/osumo-ansible/girder/plugins/osumo"
+  config.vm.synced_folder "osumo-project/osumo", "/home/vagrant/osumo-ansible/osumo-project/girder/plugins/osumo"
 
   # Name the VM.
   config.vm.define "osumo" do |node| end
