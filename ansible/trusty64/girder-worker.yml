@@ -59,15 +59,14 @@
   args:
     chdir: "{{ worktree }}/girder_worker"
 
-- name: Copy Girder Worker launch script
-  copy:
-    src: ../../asset/launch-girder-worker.sh
-    dest: "{{ storage }}"
-    mode: "u=rwx"
+- name: Install Girder Worker service
+  become: yes
+  template:
+    src: ../../asset/girder-worker.upstart.j2
+    dest: /etc/init/girder-worker.conf
 
-- name: Start Girder Worker in background
-  shell: "(./launch-girder-worker.sh >girder-worker.log 2>&1 &)"
-  async: 10
-  poll: 0
-  args:
-    chdir: "{{ storage }}"
+- name: (Re)start Girder Worker service
+  become: yes
+  service:
+    name: girder-worker
+    state: restarted
