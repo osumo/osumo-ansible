@@ -33,3 +33,39 @@ class GirderRestart < Vagrant.plugin("2")
     GirderRestartCmd
   end
 end
+
+class GirderWorkerLogCmd < Vagrant.plugin(2, :command)
+  def self.synopsis
+    "shows running Girder Worker log on the guest"
+  end
+
+  def execute
+    exec("vagrant ssh -c 'sudo tail -c +1 -f /var/log/upstart/girder-worker.log'")
+  end
+end
+
+class Log < Vagrant.plugin("2")
+  name "Girder Worker Log"
+
+  command "girder-worker-log" do
+    GirderWorkerLogCmd
+  end
+end
+
+class GirderWorkerRestartCmd < Vagrant.plugin(2, :command)
+  def self.synopsis
+    "restarts GirderWorker"
+  end
+
+  def execute
+    exec("vagrant ssh -c 'sudo restart girder-worker'")
+  end
+end
+
+class GirderWorkerRestart < Vagrant.plugin("2")
+  name "Girder Worker Restart"
+
+  command "girder-worker-restart" do
+    GirderWorkerRestartCmd
+  end
+end
