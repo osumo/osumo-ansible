@@ -4,7 +4,7 @@ class GirderLogCmd < Vagrant.plugin(2, :command)
   end
 
   def execute
-    exec("vagrant ssh -c 'tail -c +1 -f .girder/logs/error.log'")
+    exec("vagrant ssh -c 'sudo tail -c +1 -f /var/log/upstart/girder.log'")
   end
 end
 
