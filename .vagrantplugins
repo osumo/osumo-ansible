@@ -1,0 +1,17 @@
+class LogCommand < Vagrant.plugin(2, :command)
+  def self.synopsis
+    "shows running Girder log on the guest"
+  end
+
+  def execute
+    exec("vagrant ssh -c 'tail -c +1 -f .girder/logs/error.log'")
+  end
+end
+
+class Log < Vagrant.plugin("2")
+  name "Girder Log"
+
+  command "girderlog" do
+    LogCommand
+  end
+end
