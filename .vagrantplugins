@@ -1,4 +1,4 @@
-class LogCommand < Vagrant.plugin(2, :command)
+class GirderLogCmd < Vagrant.plugin(2, :command)
   def self.synopsis
     "shows running Girder log on the guest"
   end
@@ -11,7 +11,25 @@ end
 class Log < Vagrant.plugin("2")
   name "Girder Log"
 
-  command "girderlog" do
-    LogCommand
+  command "girder-log" do
+    GirderLogCmd
+  end
+end
+
+class GirderRestartCmd < Vagrant.plugin(2, :command)
+  def self.synopsis
+    "restarts Girder"
+  end
+
+  def execute
+    exec("vagrant ssh -c 'sudo restart girder'")
+  end
+end
+
+class GirderRestart < Vagrant.plugin("2")
+  name "Girder Restart"
+
+  command "girder-restart" do
+    GirderRestartCmd
   end
 end
