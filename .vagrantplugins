@@ -69,3 +69,21 @@ class GirderWorkerRestart < Vagrant.plugin("2")
     GirderWorkerRestartCmd
   end
 end
+
+class WatchCmd < Vagrant.plugin(2, :command)
+  def self.synopsis
+    "builds OSUMO plugin in watch mode"
+  end
+
+  def execute
+    exec("vagrant ssh -c './venv/bin/girder-install web --watch-plugin osumo --plugin-prefix index'")
+  end
+end
+
+class Watch < Vagrant.plugin(2)
+  name "Build OSUMO in watch mode"
+
+  command "watch" do
+    WatchCmd
+  end
+end
