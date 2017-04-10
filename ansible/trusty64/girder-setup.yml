@@ -79,11 +79,6 @@
     port: 8080
     delay: 5
 
-- name: Destroy login/password file
-  file:
-    path: "{{ worktree }}/osumo/osumo_loginpass.txt"
-    state: absent
-
 - name: Set worker plugin options
   girder:
     port: 8080
