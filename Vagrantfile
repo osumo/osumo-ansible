@@ -38,4 +38,17 @@ Vagrant.configure("2") do |config|
       "osumo_anon_password" => osumo_anon_password
     }
   end
+
+  # Run inline provisioners to launch Girder and Girder Worker.
+  #
+  # This is necessary because upstart started Girder and Girder Worker on the
+  # "startup" event, at which time the shared folders containing the code for
+  # them isn't mounted yet. This step runs *after* the folders are mounted.
+  config.vm.provision "shell",
+    inline: "sudo start girder",
+    run: "always"
+
+  config.vm.provision "shell",
+    inline: "sudo start girder-worker",
+    run: "always"
 end
