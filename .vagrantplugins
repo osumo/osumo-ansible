@@ -22,8 +22,11 @@ def vagrant_command(name, synopsis, command)
   command(name, synopsis, "vagrant ssh -c '#{command}'")
 end
 
+# Capture the first argument to the command for use by the "service" commands.
+service_command = ARGV[1] || "status"
+
 vagrant_command("osumo-girder-log", "tails Girder log", "sudo tail -c +1 -f /var/log/upstart/girder.log")
-vagrant_command("osumo-girder-restart", "restarts Girder", "sudo restart girder")
-vagrant_command("osumo-girder-worker-log", "tails Girder Worker log", "sudo tail -c +1 -f /var/log/upstart/girder-worker.log")
-vagrant_command("osumo-girder-worker-restart", "restarts Girder Worker", "sudo restart girder-worker")
+vagrant_command("osumo-girder-service", "restarts Girder", "sudo #{service_command} girder")
+vagrant_command("osumo-gw-log", "tails Girder Worker log", "sudo tail -c +1 -f /var/log/upstart/girder-worker.log")
+vagrant_command("osumo-gw-service", "restarts Girder Worker", "sudo #{service_command} girder-worker")
 vagrant_command("osumo-watch", "builds OSUMO plugin in watch mode", "./venv/bin/girder-install web --watch-plugin osumo --plugin-prefix index")
