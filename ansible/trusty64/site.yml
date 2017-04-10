@@ -8,8 +8,8 @@
   pre_tasks:
     - name: Verify required environment variables
       fail:
-        msg: "Environment variables OSUMO_ANON_USER and OSUMO_ANON_PASSWORD are required"
-      when: osumo_anon_user == "" or osumo_anon_password == ""
+        msg: "Environment variable OSUMO_ANON_USER is required"
+      when: osumo_anon_user == ""
 
     - include: mongo.yml
     - include: node7.yml

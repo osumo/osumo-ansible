@@ -60,8 +60,8 @@
 - name: Rebuild Girder web code
   command: "{{ storage }}/venv/bin/girder-install web --plugins jobs,osumo,worker"
 
-- name: Emit public user's login and password to disk
-  shell: "echo {{ osumo_anon_user }} {{ osumo_anon_password }} >{{ worktree }}/osumo/osumo_loginpass.txt"
+- name: Emit public user's login
+  shell: "echo {{ osumo_anon_user }} >{{ worktree }}/osumo/osumo_anonlogin.txt"
   args:
     chdir: "{{ storage }}"
 
