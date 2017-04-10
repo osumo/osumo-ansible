@@ -1,0 +1,32 @@
+def command(name, synopsis, command)
+  Class.new(Vagrant.plugin("2")) do
+    name name
+
+    command name do
+      Class.new(Vagrant.plugin(2, :command)) do
+        @synopsis = synopsis
+
+        def self.synopsis
+          @synopsis
+        end
+
+        define_method :execute do
+          exec(command)
+        end
+      end
+    end
+  end
+end
+
+def vagrant_command(name, synopsis, command)
+  command(name, synopsis, "vagrant ssh -c '#{command}'")
+end
+
+# Capture the first argument to the command for use by the "service" commands.
+service_command = ARGV[1] || "status"
+
+vagrant_command("osumo-girder-log", "tails Girder log", "sudo tail -c +1 -F /var/log/upstart/girder.log")
+vagrant_command("osumo-girder-service", "restarts Girder", "sudo #{service_command} girder")
+vagrant_command("osumo-gw-log", "tails Girder Worker log", "sudo tail -c +1 -F /var/log/upstart/girder-worker.log")
+vagrant_command("osumo-gw-service", "restarts Girder Worker", "sudo #{service_command} girder-worker")
+vagrant_command("osumo-watch", "builds OSUMO plugin in watch mode", "./venv/bin/girder-install web --watch-plugin osumo --plugin-prefix index")
