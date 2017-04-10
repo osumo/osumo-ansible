@@ -1,79 +1,25 @@
-class Log < Vagrant.plugin("2")
-  name "Girder Log"
+def command(name, synopsis, command)
+  Class.new(Vagrant.plugin("2")) do
+    name name
 
-  command "girder-log" do
-    Class.new(Vagrant.plugin(2, :command)) do
-      def self.synopsis
-        "shows running Girder log on the guest"
-      end
+    command name do
+      Class.new(Vagrant.plugin(2, :command)) do
+        @synopsis = synopsis
 
-      def execute
-        exec("vagrant ssh -c 'sudo tail -c +1 -f /var/log/upstart/girder.log'")
-      end
-    end
-  end
-end
+        def self.synopsis
+          @synopsis
+        end
 
-class GirderRestart < Vagrant.plugin("2")
-  name "Girder Restart"
-
-  command "girder-restart" do
-    Class.new(Vagrant.plugin(2, :command)) do
-      def self.synopsis
-        "restarts Girder"
-      end
-
-      def execute
-        exec("vagrant ssh -c 'sudo restart girder'")
+        define_method :execute do
+          exec(command)
+        end
       end
     end
   end
 end
 
-class Log < Vagrant.plugin("2")
-  name "Girder Worker Log"
-
-  command "girder-worker-log" do
-    Class.new(Vagrant.plugin(2, :command)) do
-      def self.synopsis
-        "shows running Girder Worker log on the guest"
-      end
-
-      def execute
-        exec("vagrant ssh -c 'sudo tail -c +1 -f /var/log/upstart/girder-worker.log'")
-      end
-    end
-  end
-end
-
-class GirderWorkerRestart < Vagrant.plugin("2")
-  name "Girder Worker Restart"
-
-  command "girder-worker-restart" do
-    Class.new(Vagrant.plugin(2, :command)) do
-      def self.synopsis
-        "restarts GirderWorker"
-      end
-
-      def execute
-        exec("vagrant ssh -c 'sudo restart girder-worker'")
-      end
-    end
-  end
-end
-
-class Watch < Vagrant.plugin(2)
-  name "Build OSUMO in watch mode"
-
-  command "watch" do
-    Class.new(Vagrant.plugin(2, :command)) do
-      def self.synopsis
-        "builds OSUMO plugin in watch mode"
-      end
-
-      def execute
-        exec("vagrant ssh -c './venv/bin/girder-install web --watch-plugin osumo --plugin-prefix index'")
-      end
-    end
-  end
-end
+command("girder-log", "tails Girder log", "vagrant ssh -c 'sudo tail -c +1 -f /var/log/upstart/girder.log'")
+command("girder-restart", "restarts Girder", "vagrant ssh -c 'sudo restart girder'")
+command("girder-worker-log", "tails Girder Worker log", "vagrant ssh -c 'sudo tail -c +1 -f /var/log/upstart/girder-worker.log'")
+command("girder-worker-restart", "restarts Girder Worker", "vagrant ssh -c 'sudo restart girder-worker'")
+command("watch", "builds OSUMO plugin in watch mode", "vagrant ssh -c './venv/bin/girder-install web --watch-plugin osumo --plugin-prefix index'")
