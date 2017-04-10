@@ -14,6 +14,10 @@ Vagrant.configure("2") do |config|
   host_port = ENV["OSUMO_HOST_PORT"] || 8080
   config.vm.network "forwarded_port", guest: 8080, host: host_port
 
+  # Set up shared folders.
+  config.vm.synced_folder ".", "/home/vagrant/osumo-ansible"
+  config.vm.synced_folder "osumo-project/osumo", "/home/vagrant/osumo-ansible/osumo-project/girder/plugins/osumo"
+
   # Name the VM.
   config.vm.define "osumo" do |node| end
 
@@ -25,11 +29,13 @@ Vagrant.configure("2") do |config|
     }
 
     ansible.playbook = "ansible/#{box}/site.yml"
-    ansible.galaxy_role_file = "ansible/#{box}/requirements.yml"
 
-    Extra_vars = ENV["ANSIBLE_EXTRA_VARS"]
-    if !Extra_vars.nil? && !Extra_vars.empty?
-      ansible.extra_vars = Hash[Extra_vars.split(/\s+/).map{|w| w.wplit("=")}]
-    end
+    osumo_anon_user = ENV["OSUMO_ANON_USER"] || ""
+    osumo_anon_password = ENV["OSUMO_ANON_PASSWORD"] || ""
+
+    ansible.extra_vars = {
+      "osumo_anon_user" => osumo_anon_user,
+      "osumo_anon_password" => osumo_anon_password
+    }
   end
 end

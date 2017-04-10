@@ -1,9 +1,3 @@
-- name: Clone Girder Worker repository
-  git:
-    repo: https://github.com/girder/girder_worker
-    dest: "{{ storage }}/girder_worker"
-    version: "{{ girder_worker_revision }}"
-
 - name: Fetch CRAN repository key
   become: yes
   apt_key:
@@ -43,37 +37,36 @@
 - name: Install Python dependencies for Girder Worker
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
-    chdir: "{{ storage }}/girder_worker"
+    chdir: "{{ worktree }}/girder_worker"
 
 - name: Install Python dependencies for girder_io plugin
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
-    chdir: "{{ storage }}/girder_worker/girder_worker/plugins/girder_io"
+    chdir: "{{ worktree }}/girder_worker/girder_worker/plugins/girder_io"
 
 - name: Install Python dependencies for r plugin
   command: "{{ storage }}/venv/bin/pip install -r requirements.txt"
   args:
-    chdir: "{{ storage }}/girder_worker/girder_worker/plugins/r"
+    chdir: "{{ worktree }}/girder_worker/girder_worker/plugins/r"
 
 - name: Copy local config file for Girder Worker
   copy:
-    src: ../../worker.local.cfg
-    dest: "{{ storage }}/girder_worker/girder_worker"
+    src: ../../asset/worker.local.cfg
+    dest: "{{ worktree }}/girder_worker/girder_worker"
 
 - name: Install Girder Worker in editable mode
   command: "{{ storage }}/venv/bin/pip install -e ."
   args:
-    chdir: "{{ storage }}/girder_worker"
+    chdir: "{{ worktree }}/girder_worker"
 
-- name: Copy Girder Worker launch script
-  copy:
-    src: ../../launch-girder-worker.sh
-    dest: "{{ storage }}"
-    mode: "u=rwx"
+- name: Install Girder Worker service
+  become: yes
+  template:
+    src: ../../asset/girder-worker.upstart.j2
+    dest: /etc/init/girder-worker.conf
 
-- name: Start Girder Worker in background
-  shell: "(./launch-girder-worker.sh >girder-worker.log 2>&1 &)"
-  async: 10
-  poll: 0
-  args:
-    chdir: "{{ storage }}"
+- name: (Re)start Girder Worker service
+  become: yes
+  service:
+    name: girder-worker
+    state: restarted
